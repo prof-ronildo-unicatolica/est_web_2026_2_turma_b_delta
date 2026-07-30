@@ -5,7 +5,11 @@ Desenvolvimento Web** — 2026.2.
 
 ## Integrantes
 
-_A definir apos o sorteio na Aula 01._
+- Mateus Peixoto de Sousa
+- Ester Luiza de Souza Lima
+- Thiago de Sousa Silva
+- João Victor Crispim Pinheiro
+- Maria Sharon Silva Oliveira
 
 ## Fluxo de trabalho
 
