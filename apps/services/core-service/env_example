@@ -1,0 +1,13 @@
+PROJECT_NAME="Sistema de Reservas - Core Service"
+API_V1_STR="/api/v1"
+
+# PostgreSQL Config
+POSTGRES_SERVER=localhost
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=postgres
+POSTGRES_DB=hotel_db_dev
+POSTGRES_PORT=5432
+
+# MongoDB Config
+MONGODB_URL=mongodb://admin:admin123@localhost:27017
+MONGODB_DB=hotel_mongo_dev
