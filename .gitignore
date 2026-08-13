@@ -12,7 +12,7 @@ ENV/
 htmlcov/
 .mypy_cache/
 .ruff_cache/
-poetry.lock
+
 
 # Node / Frontend
 node_modules/
