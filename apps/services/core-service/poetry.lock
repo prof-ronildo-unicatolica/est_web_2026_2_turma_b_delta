@@ -12,6 +12,7 @@ files = [
     {file = "aio_pika-9.6.2.tar.gz", hash = "sha256:c49e9246080dc8ffa1bb0e4aca407bf3d8ad78c3ee3a93df88b68fe65d7a49b9"},
 ]
 
+[package.dependencies]
 aiormq = ">=6.8,<7"
 exceptiongroup = {version = ">=1,<2", markers = "python_full_version < \"3.11.0\""}
 yarl = "*"
