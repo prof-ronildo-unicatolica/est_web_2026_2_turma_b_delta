@@ -6,6 +6,7 @@ from alembic import context
 
 # Importar modelos e configurações
 from app.core.config import settings
+from app.models import hotel  # noqa: F401
 from app.models.tutorial import Base
 
 # Objeto de configuração do Alembic
