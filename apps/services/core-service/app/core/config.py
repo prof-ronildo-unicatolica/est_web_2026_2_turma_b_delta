@@ -8,6 +8,9 @@ class Settings(BaseSettings):
     PROJECT_NAME: str = "Sistema de Reservas - Core Service"
     API_V1_STR: str = "/api/v1"
 
+    SECRET_KEY: str
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
+
     # Configurações do PostgreSQL
     POSTGRES_SERVER: str = "localhost"
     POSTGRES_USER: str = "postgres"

@@ -1,4 +1,10 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
+
+
+class RegisterRequest(BaseModel):
+    nome: str
+    email: str
+    senha: str
 
 
 class LoginRequest(BaseModel):
@@ -13,6 +19,8 @@ class Token(BaseModel):
 
 class UsuarioPublic(BaseModel):
     """Perfil publico do usuario (nunca expoe senha)."""
+
+    model_config = ConfigDict(from_attributes=True)
 
     email: str
     nome: str
