@@ -9,14 +9,22 @@ from app.core.security import decode_access_token
 from app.repositories.usuario_repository import UsuarioRepository
 
 bearer_scheme = HTTPBearer(
-    description="Use o token retornado por POST /auth/login"
+    description="Use o token retornado por POST /auth/login",
+    auto_error=False,
 )
 
 
 def get_current_user(
-    credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
+    credentials: HTTPAuthorizationCredentials | None = Depends(bearer_scheme),
     db: Session = Depends(get_db),
 ):
+    if credentials is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Token nao informado",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
     try:
         payload = decode_access_token(credentials.credentials)
         subject = payload.get("sub")
