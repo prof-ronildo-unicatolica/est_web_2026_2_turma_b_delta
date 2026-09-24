@@ -6,6 +6,7 @@ import ImageAndCarousel from './components/ImageAndCarousel'
 import Sidebar from './components/Sidebar'
 import VideoComponent from './components/VideoComponent'
 import InteractiveExamples from './components/InteractiveExamples'
+import HoteisRaw from './components/HoteisRaw'
 
 export default function App() {
   const [data, setData] = useState(null)
@@ -130,6 +131,7 @@ export default function App() {
               <ImageAndCarousel />
               <VideoComponent />
               <InteractiveExamples />
+              <HoteisRaw />
             </div>
           </div>
         )}
