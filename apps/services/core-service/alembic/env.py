@@ -8,6 +8,7 @@ from alembic import context
 from app.core.config import settings
 from app.models import hotel, reserva
 from app.models.tutorial import Base
+from app.models.usuario import Usuario
 
 _MODEL_MODULES = (hotel, reserva)
 
