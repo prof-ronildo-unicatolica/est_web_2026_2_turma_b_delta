@@ -22,6 +22,6 @@ class Hotel(Base):
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
     nome: Mapped[str] = mapped_column(String(100), nullable=False)
     cidade_id: Mapped[uuid.UUID] = mapped_column(
-        ForeignKey("cidades.id", ondelete="CASCADE"), nullable=False, index=True
+        ForeignKey("cidades.id", ondelete="CASCADE"), nullable=False,
     )
     cidade: Mapped["Cidade"] = relationship(back_populates="hoteis")
