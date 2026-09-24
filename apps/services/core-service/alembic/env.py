@@ -6,7 +6,10 @@ from alembic import context
 
 # Importar modelos e configurações
 from app.core.config import settings
+from app.models import hotel, reserva
 from app.models.tutorial import Base
+
+_MODEL_MODULES = (hotel, reserva)
 
 # Objeto de configuração do Alembic
 config = context.config
