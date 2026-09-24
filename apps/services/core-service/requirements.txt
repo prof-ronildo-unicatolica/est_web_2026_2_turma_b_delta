@@ -6,6 +6,7 @@ psycopg2-binary>=2.9.9,<2.10.0
 motor>=3.3.2,<3.4.0
 aio-pika>=9.4.1,<10.0.0
 pydantic>=2.6.4,<2.7.0
+email-validator>=2.1.0,<3.0.0
 pydantic-settings>=2.2.1,<2.3.0
 passlib[bcrypt]>=1.7.4,<1.8.0
 bcrypt>=4.1.2,<4.2.0
