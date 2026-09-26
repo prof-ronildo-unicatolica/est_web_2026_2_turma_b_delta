@@ -12,6 +12,7 @@ router = APIRouter(prefix="/cidades", tags=["Cidades"])
     "",
     response_model=CidadeResponseSchema,
     status_code=status.HTTP_201_CREATED,
+    summary="Cria uma cidade",
 )
 def criar_cidade(payload: CidadeCreateSchema, db: Session = Depends(get_db)):
     try:
@@ -22,6 +23,10 @@ def criar_cidade(payload: CidadeCreateSchema, db: Session = Depends(get_db)):
         ) from error
 
 
-@router.get("", response_model=list[CidadeResponseSchema])
+@router.get(
+    "",
+    response_model=list[CidadeResponseSchema],
+    summary="Lista as cidades",
+)
 def listar_cidades(db: Session = Depends(get_db)):
     return CidadeService(db).listar()
