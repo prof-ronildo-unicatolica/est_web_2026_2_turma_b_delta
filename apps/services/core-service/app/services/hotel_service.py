@@ -42,8 +42,8 @@ class HotelService:
         return self.repository.create(nome=nome, cidade_id=cidade_id)
 
     def listar(self, cidade_id=None) -> list[Hotel]:
-        if cidade_id is not None:
-            if not self.cidades.get_by_id(cidade_id):
-                raise CidadeNaoEncontradaError(f"Nao existe cidade com id '{cidade_id}'.")
-            return self.repository.list_by_cidade(cidade_id)
-        return self.repository.list()
+        if cidade_id is None:
+            return self.repository.list()
+        if not self.cidades.get_by_id(cidade_id):
+            raise CidadeNaoEncontradaError(f"Nao existe cidade com id '{cidade_id}'.")
+        return self.repository.list_by_cidade(cidade_id)
