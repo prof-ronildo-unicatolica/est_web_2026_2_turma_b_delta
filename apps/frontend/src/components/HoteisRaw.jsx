@@ -3,9 +3,9 @@ import { useEffect, useState } from 'react'
 const API = 'http://localhost:8000/api/v1'
 
 async function buscarJson(endpoint) {
-  const resposta = await fetch(`${API}/${endpoint})
+  const resposta = await fetch(API + '/' + endpoint)
   if (!resposta.ok) {
-    throw new Error(`GET /${endpoint} devolveu ${resposta.status}`)
+    throw new Error('GET /' + endpoint + ' devolveu ' + resposta.status)
   }
   return resposta.json()
 }
