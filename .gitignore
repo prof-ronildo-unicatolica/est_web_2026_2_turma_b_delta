@@ -46,3 +46,4 @@ Thumbs.db
 *.db
 
 _raw/
+!.env.exemplo
