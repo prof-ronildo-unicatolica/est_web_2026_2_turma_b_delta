@@ -1,7 +1,7 @@
 from sqlalchemy import event
 
 from app.models.hotel import Cidade
-from app.repositories.hotel_repository import HotelRepository
+from app.repositories.hotel_repository import CidadeRepository, HotelRepository
 from app.repositories.tutorial_repository import TutorialRepository
 
 
