@@ -1,4 +1,3 @@
-version: "3.8"
 
 services:
   # ─── Bancos de Dados ────────────────────────────────────────────────────────
@@ -7,15 +6,15 @@ services:
     container_name: hotel-postgres
     restart: unless-stopped #always
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=hotel_db_dev
+      - POSTGRES_USER=${POSTGRES_USER:?Defina POSTGRES_USER no arquivo .env}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:?Defina POSTGRES_PASSWORD no arquivo .env}
+      - POSTGRES_DB=${POSTGRES_DB:?Defina POSTGRES_DB no arquivo .env}
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d hotel_db_dev"]
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -25,8 +24,8 @@ services:
     container_name: hotel-mongo
     restart: unless-stopped
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=admin
-      - MONGO_INITDB_ROOT_PASSWORD=admin123
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME:?Defina MONGO_INITDB_ROOT_USERNAME no arquivo .env}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD:?Defina MONGO_INITDB_ROOT_PASSWORD no arquivo .env}
     ports:
       - "27017:27017"
     volumes:
@@ -42,8 +41,8 @@ services:
     container_name: hotel-rabbitmq
     restart: unless-stopped
     environment:
-      - RABBITMQ_DEFAULT_USER=guest
-      - RABBITMQ_DEFAULT_PASS=guest
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER:?Defina RABBITMQ_DEFAULT_USER no arquivo .env}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS:?Defina RABBITMQ_DEFAULT_PASS no arquivo .env}
     ports:
       - "5672:5672"
       - "15672:15672"
@@ -61,15 +60,15 @@ services:
     container_name: hotel-core-service
     restart: unless-stopped
     environment:
-      - POSTGRES_SERVER=postgres
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=hotel_db_dev
-      - POSTGRES_PORT=5432
-      - MONGODB_URL=mongodb://admin:admin123@mongodb:27017
-      - MONGODB_DB=hotel_mongo_dev
-      - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672/
-      - SECRET_KEY=${SECRET_KEY}
+      - POSTGRES_SERVER=${POSTGRES_SERVER:?Defina POSTGRES_SERVER no arquivo .env}
+      - POSTGRES_USER=${POSTGRES_USER:?Defina POSTGRES_USER no arquivo .env}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:?Defina POSTGRES_PASSWORD no arquivo .env}
+      - POSTGRES_DB=${POSTGRES_DB:?Defina POSTGRES_DB no arquivo .env}
+      - POSTGRES_PORT=${POSTGRES_PORT:?Defina POSTGRES_PORT no arquivo .env}
+      - MONGODB_URL=${MONGODB_URL:?Defina MONGODB_URL no arquivo .env}
+      - MONGODB_DB=${MONGODB_DB:?Defina MONGODB_DB no arquivo .env}
+      - RABBITMQ_URL=${RABBITMQ_URL:?Defina RABBITMQ_URL no arquivo .env}
+      - SECRET_KEY=${SECRET_KEY:?Defina SECRET_KEY no arquivo .env}
     ports:
       - "8000:8000"
     depends_on:
@@ -93,14 +92,14 @@ services:
     container_name: hotel-audit-worker
     restart: unless-stopped
     environment:
-      - POSTGRES_SERVER=postgres
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=hotel_db_dev
-      - POSTGRES_PORT=5432
-      - MONGODB_URL=mongodb://admin:admin123@mongodb:27017
-      - MONGODB_DB=hotel_mongo_dev
-      - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672/
+      - POSTGRES_SERVER=${POSTGRES_SERVER:?Defina POSTGRES_SERVER no arquivo .env}
+      - POSTGRES_USER=${POSTGRES_USER:?Defina POSTGRES_USER no arquivo .env}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:?Defina POSTGRES_PASSWORD no arquivo .env}
+      - POSTGRES_DB=${POSTGRES_DB:?Defina POSTGRES_DB no arquivo .env}
+      - POSTGRES_PORT=${POSTGRES_PORT:?Defina POSTGRES_PORT no arquivo .env}
+      - MONGODB_URL=${MONGODB_URL:?Defina MONGODB_URL no arquivo .env}
+      - MONGODB_DB=${MONGODB_DB:?Defina MONGODB_DB no arquivo .env}
+      - RABBITMQ_URL=${RABBITMQ_URL:?Defina RABBITMQ_URL no arquivo .env}
     depends_on:
       postgres:
         condition: service_healthy

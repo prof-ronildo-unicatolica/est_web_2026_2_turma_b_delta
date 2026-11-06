@@ -13,8 +13,8 @@ class Settings(BaseSettings):
 
     # Configurações do PostgreSQL
     POSTGRES_SERVER: str = "localhost"
-    POSTGRES_USER: str = "postgres"
-    POSTGRES_PASSWORD: str = "postgres"
+    POSTGRES_USER: str
+    POSTGRES_PASSWORD: str
     POSTGRES_DB: str = "hotel_db_dev"
     POSTGRES_PORT: str = "5432"
 
@@ -23,11 +23,11 @@ class Settings(BaseSettings):
         return f"postgresql://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@{self.POSTGRES_SERVER}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
 
     # Configurações do MongoDB
-    MONGODB_URL: str = "mongodb://admin:admin123@localhost:27017"
+    MONGODB_URL: str
     MONGODB_DB: str = "hotel_mongo_dev"
 
     # Configurações do RabbitMQ
-    RABBITMQ_URL: str = "amqp://guest:guest@localhost:5672/"
+    RABBITMQ_URL: str
 
 
 settings = Settings()

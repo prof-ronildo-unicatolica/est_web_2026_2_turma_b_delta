@@ -1,13 +1,18 @@
-PROJECT_NAME="Sistema de Reservas - Core Service"
-API_V1_STR="/api/v1"
+# Exemplo de configuração do Core Service.
+# Copie para .env e substitua os placeholders pelos valores do seu ambiente.
 
-# PostgreSQL Config
-POSTGRES_SERVER=localhost
-POSTGRES_USER=postgres
-POSTGRES_PASSWORD=postgres
+PROJECT_NAME=Sistema de Reservas - Core Service
+API_V1_STR=/api/v1
+
+SECRET_KEY=gere_uma_chave_secreta_local
+
+POSTGRES_SERVER=postgres
+POSTGRES_USER=seu_usuario_postgres
+POSTGRES_PASSWORD=sua_senha_postgres
 POSTGRES_DB=hotel_db_dev
 POSTGRES_PORT=5432
 
-# MongoDB Config
-MONGODB_URL=mongodb://admin:admin123@localhost:27017
+MONGODB_URL=mongodb://USUARIO:SENHA@mongodb:27017/?authSource=admin
 MONGODB_DB=hotel_mongo_dev
+
+RABBITMQ_URL=amqp://USUARIO:SENHA@rabbitmq:5672/

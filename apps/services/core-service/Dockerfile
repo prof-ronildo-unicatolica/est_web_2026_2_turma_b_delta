@@ -19,7 +19,9 @@ RUN poetry config virtualenvs.create false \
     && poetry install --no-interaction --no-ansi --with dev
 
 # Copia o restante do codigo
-COPY . .
+COPY app ./app
+COPY alembic ./alembic
+COPY alembic.ini ./alembic.ini
 
 EXPOSE 8000
 
