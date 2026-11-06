@@ -1,7 +1,12 @@
+import os
+
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+
+# Set a local-only key before importing the app in tests.
+os.environ.setdefault("SECRET_KEY", "pytest-only-not-for-production-32chars")
 
 from app.core.database import get_db
 from app.main import app
