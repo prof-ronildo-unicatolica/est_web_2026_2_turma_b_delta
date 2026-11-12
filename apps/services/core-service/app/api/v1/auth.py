@@ -3,17 +3,22 @@ from sqlalchemy.orm import Session
 
 from app.api.deps import get_current_admin, get_current_user
 from app.core.database import get_db
-from app.schemas.usuario import LoginRequest, RegisterRequest, Token, UsuarioPublic
+from app.schemas.usuario import (
+    LoginRequest,
+    RegisterRequest,
+    RegistrationAccepted,
+    Token,
+    UsuarioPublic,
+)
 from app.services.auth_service import AuthService
-
 
 router = APIRouter(prefix="/auth", tags=["Autenticação"])
 
 
 @router.post(
     "/register",
-    response_model=UsuarioPublic,
-    status_code=status.HTTP_201_CREATED,
+    response_model=RegistrationAccepted,
+    status_code=status.HTTP_202_ACCEPTED,
 )
 def register(
     payload: RegisterRequest,
@@ -21,19 +26,14 @@ def register(
 ):
     service = AuthService(db)
 
-    usuario = service.registrar(
+    service.registrar(
         nome=payload.nome,
         email=payload.email,
         senha=payload.senha,
     )
 
-    if usuario is None:
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail="E-mail já cadastrado",
-        )
-
-    return usuario
+    # Status e corpo iguais para cadastro novo e e-mail já utilizado.
+    return RegistrationAccepted()
 
 
 @router.post("/login", response_model=Token)
