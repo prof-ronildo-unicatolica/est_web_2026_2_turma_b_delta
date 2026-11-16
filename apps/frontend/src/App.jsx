@@ -41,7 +41,11 @@ export default function App() {
   const [destino, setDestino] = useState('')
   const [entrada, setEntrada] = useState('')
   const [saida, setSaida] = useState('')
-  const [hospedes, setHospedes] = useState('2')
+  const [adultos, setAdultos] = useState(2)
+  const [criancas, setCriancas] = useState(0)
+  const [quartos, setQuartos] = useState(1)
+  const [aceitaAnimais, setAceitaAnimais] = useState(false)
+  const [mostrarHospedes, setMostrarHospedes] = useState(false)
   const [precoMaximo, setPrecoMaximo] = useState('')
   const [avaliacaoMinima, setAvaliacaoMinima] = useState('')
   const [ordenacao, setOrdenacao] = useState('relevancia')
@@ -145,20 +149,90 @@ export default function App() {
                 />
               </div>
 
-              <div className="search-field guests-field">
-                <label htmlFor="hospedes">HÓSPEDES</label>
-                <select
-                  id="hospedes"
-                  value={hospedes}
-                  onChange={(e) => setHospedes(e.target.value)}
-                >
-                  <option value="1">1 hóspede</option>
-                  <option value="2">2 hóspedes</option>
-                  <option value="3">3 hóspedes</option>
-                  <option value="4">4 hóspedes</option>
-                  <option value="5">5 hóspedes</option>
-                </select>
-              </div>
+            <div className="search-field guests-field">
+              <label>HÓSPEDES E QUARTOS</label>
+
+              <button
+                type="button"
+                className="guests-trigger"
+                onClick={() => setMostrarHospedes(!mostrarHospedes)}
+              >
+                {adultos + criancas} {(adultos + criancas) === 1 ? 'hóspede' : 'hóspedes'},{' '}
+                {quartos} {quartos === 1 ? 'quarto' : 'quartos'}
+                <span>⌄</span>
+              </button>
+
+              {mostrarHospedes && (
+                <div className="guests-dropdown">
+                  {[
+                    {
+                      nome: 'Adultos',
+                      quantidade: adultos,
+                      alterar: setAdultos,
+                      minimo: 1,
+                    },
+                    {
+                      nome: 'Crianças',
+                      quantidade: criancas,
+                      alterar: setCriancas,
+                      minimo: 0,
+                    },
+                    {
+                      nome: 'Quartos',
+                      quantidade: quartos,
+                      alterar: setQuartos,
+                      minimo: 1,
+                    },
+                  ].map((item) => (
+                    <div className="guest-counter" key={item.nome}>
+                      <strong>{item.nome}</strong>
+
+                      <div className="counter-controls">
+                        <button
+                          type="button"
+                          onClick={() =>
+                            item.alterar(Math.max(item.minimo, item.quantidade - 1))
+                          }
+                          disabled={item.quantidade <= item.minimo}
+                        >
+                          −
+                        </button>
+
+                        <span>{item.quantidade}</span>
+
+                        <button
+                          type="button"
+                          onClick={() => item.alterar(item.quantidade + 1)}
+                        >
+                          +
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+
+                  <div className="pets-option">
+                    <div>
+                      <strong>Aceita animais</strong>
+                      <small>Ver só estadias que aceitam animais</small>
+                    </div>
+
+                    <input
+                      type="checkbox"
+                      checked={aceitaAnimais}
+                      onChange={(e) => setAceitaAnimais(e.target.checked)}
+                    />
+                  </div>
+
+                  <button
+                    type="button"
+                    className="guests-confirm"
+                    onClick={() => setMostrarHospedes(false)}
+                  >
+                    Confirmar
+                  </button>
+                </div>
+              )}
+            </div>
 
               <button
                 className="search-button"

@@ -606,3 +606,113 @@ button, input, select {
   border-color: #1769e8;
   box-shadow: 0 0 0 3px rgba(23, 105, 232, .1);
 }
+
+
+.guests-field {
+  position: relative;
+  min-width: 190px;
+}
+
+.guests-trigger {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: none;
+  background: transparent;
+  color: #18345b;
+  font-size: 14px;
+  padding: 8px 0;
+  cursor: pointer;
+}
+
+.guests-dropdown {
+  position: absolute;
+  top: calc(100% + 16px);
+  right: 0;
+  width: 355px;
+  padding: 24px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 8px 35px rgba(0, 0, 0, 0.18);
+  z-index: 100;
+}
+
+.guest-counter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 22px;
+  color: #24364b;
+}
+
+.counter-controls {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.counter-controls button {
+  width: 38px;
+  height: 38px;
+  border: 1px solid #0879e8;
+  border-radius: 50%;
+  background: white;
+  color: #0879e8;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.counter-controls button:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.counter-controls span {
+  min-width: 38px;
+  text-align: center;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+.pets-option {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid #eee;
+  padding-top: 22px;
+  margin-top: 5px;
+  margin-bottom: 22px;
+}
+
+.pets-option div {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.pets-option small {
+  color: #777;
+}
+
+.pets-option input {
+  width: 20px;
+  height: 20px;
+  accent-color: #0879e8;
+}
+
+.guests-confirm {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  background: #0879e8;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.guests-confirm:hover {
+  background: #0665c4;
+}
