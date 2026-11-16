@@ -1,145 +1,290 @@
-import { useEffect, useState } from 'react'
-import ProfessorProfile from './components/ProfessorProfile'
-import DisciplinasList from './components/DisciplinasList'
-import StacksTable from './components/StacksTable'
-import ImageAndCarousel from './components/ImageAndCarousel'
-import Sidebar from './components/Sidebar'
-import VideoComponent from './components/VideoComponent'
-import InteractiveExamples from './components/InteractiveExamples'
-import HoteisRaw from './components/HoteisRaw'
+
+import { useState } from 'react'
+
+const hoteis = [
+  {
+    id: 1,
+    nome: 'Hotel Fazenda Sertão Verde',
+    cidade: 'Quixadá',
+    estado: 'Ceará',
+    avaliacao: 9.2,
+    categoria: 'Excelente',
+    preco: 280,
+    imagem: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=900',
+    descricao: 'Conforto, tranquilidade e uma bela vista da natureza.',
+  },
+  {
+    id: 2,
+    nome: 'Pousada Pedra dos Ventos',
+    cidade: 'Quixadá',
+    estado: 'Ceará',
+    avaliacao: 8.8,
+    categoria: 'Muito bom',
+    preco: 190,
+    imagem: 'https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=900',
+    descricao: 'Uma experiência aconchegante para descansar.',
+  },
+  {
+    id: 3,
+    nome: 'Hotel Central Premium',
+    cidade: 'Fortaleza',
+    estado: 'Ceará',
+    avaliacao: 9.5,
+    categoria: 'Excepcional',
+    preco: 350,
+    imagem: 'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=900',
+    descricao: 'Estrutura moderna e localização privilegiada.',
+  },
+]
 
 export default function App() {
-  const [data, setData] = useState(null)
-  const [error, setError] = useState(null)
-  const [loading, setLoading] = useState(true)
+  const [destino, setDestino] = useState('')
+  const [entrada, setEntrada] = useState('')
+  const [saida, setSaida] = useState('')
+  const [hospedes, setHospedes] = useState('2')
+  const [precoMaximo, setPrecoMaximo] = useState('')
+  const [ordenacao, setOrdenacao] = useState('relevancia')
 
-  useEffect(() => {
-    fetch('http://localhost:8000/api/v1/sobre')
-      .then((res) => {
-        if (!res.ok) {
-          throw new Error('Falha ao se conectar com a API')
-        }
-        return res.json()
-      })
-      .then((json) => {
-        setData(json)
-        setLoading(false)
-      })
-      .catch((err) => {
-        setError(err.message)
-        setLoading(false)
-      })
-  }, [])
+  const hoteisFiltrados = hoteis.filter((hotel) => {
+    const correspondeDestino =
+      `${hotel.nome} ${hotel.cidade} ${hotel.estado}`
+        .toLowerCase()
+        .includes(destino.toLowerCase())
+
+    const correspondePreco =
+      !precoMaximo || hotel.preco <= Number(precoMaximo)
+
+    return correspondeDestino && correspondePreco
+  })
+
+  const hoteisOrdenados = [...hoteisFiltrados].sort((a, b) => {
+    if (ordenacao === 'menor-preco') {
+      return a.preco - b.preco
+    }
+
+    if (ordenacao === 'melhor-avaliacao') {
+      return b.avaliacao - a.avaliacao
+    }
+
+    return 0
+  })
 
   return (
-    <div className="bg-light min-vh-100 pb-5">
-      {/* Navbar de Exemplo */}
-      <nav className="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm mb-4 sticky-top">
-        <div className="container">
-          <a className="navbar-brand d-flex align-items-center" href="#">
-            <span className="fs-4 fw-bold text-primary">Rede Hoteleira</span>
-            <span className="ms-2 badge bg-secondary text-wrap small">Estágio II</span>
+    <div className="hotel-app">
+      <nav className="hotel-navbar">
+        <div className="hotel-container navbar-content">
+          <a className="hotel-logo" href="#">
+            <span className="logo-icon">H</span>
+            hospeda<span>+</span>
           </a>
-          <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span className="navbar-toggler-icon"></span>
-          </button>
-          <div className="collapse navbar-collapse" id="navbarNav">
-            <ul className="navbar-nav me-auto">
-              <li className="nav-item">
-                <a className="nav-link active" href="#">Home</a>
-              </li>
-              <li className="nav-item">
-                <a className="nav-link" href="#tutorial-components">Tutorial</a>
-              </li>
-            </ul>
-            <div className="d-flex align-items-center gap-2">
-              <button className="btn btn-outline-primary btn-sm px-3" type="button">
-                Login
-              </button>
-              <button className="btn btn-primary btn-sm px-3" type="button">
-                Perfil
-              </button>
-            </div>
+
+          <div className="navbar-links">
+            <a href="#inicio">Início</a>
+            <a href="#hoteis">Hospedagens</a>
+            <a href="#sobre">Sobre</a>
           </div>
+
+          <button className="login-button">Entrar</button>
         </div>
       </nav>
 
-      {/* Cabecalho Principal */}
-      <div className="container">
-        <header className="mb-5 p-4 bg-white rounded shadow-sm">
-          <div className="row align-items-center">
-            <div className="col-md-8">
-              <h1 className="display-5 text-primary fw-bold">Sistemas de Informação - Estágio II</h1>
-              <p className="lead text-secondary mb-0">Projeto Monorepo Base (Boilerplate de Inicialização)</p>
-            </div>
-            <div className="col-md-4 text-md-end mt-3 mt-md-0">
-              <div className="d-flex justify-content-md-end gap-2">
-                <button className="btn btn-sm btn-outline-secondary" onClick={() => window.location.reload()}>
-                  Recarregar Dados
-                </button>
+      <main>
+        <section className="hero-section" id="inicio">
+          <div className="hero-overlay"></div>
+
+          <div className="hotel-container hero-content">
+            <span className="hero-tag">SUA PRÓXIMA VIAGEM COMEÇA AQUI</span>
+
+            <h1>
+              Encontre o lugar
+              <br />
+              perfeito para <span>ficar.</span>
+            </h1>
+
+            <p>
+              Compare hospedagens, descubra destinos e encontre
+              a melhor opção para sua viagem.
+            </p>
+
+            <div className="search-panel">
+              <div className="search-field destination-field">
+                <label htmlFor="destino">DESTINO</label>
+                <input
+                  id="destino"
+                  type="text"
+                  placeholder="Para onde você vai?"
+                  value={destino}
+                  onChange={(e) => setDestino(e.target.value)}
+                />
               </div>
+
+              <div className="search-field">
+                <label htmlFor="entrada">CHECK-IN</label>
+                <input
+                  id="entrada"
+                  type="date"
+                  lang="pt-BR"
+                  value={entrada}
+                  onChange={(e) => setEntrada(e.target.value)}
+                />
+              </div>
+
+              <div className="search-field">
+                <label htmlFor="saida">CHECK-OUT</label>
+                <input
+                  id="saida"
+                  type="date"
+                  lang="pt-BR"
+                  value={saida}
+                  onChange={(e) => setSaida(e.target.value)}
+                  min={entrada || undefined}
+                />
+              </div>
+
+              <div className="search-field guests-field">
+                <label htmlFor="hospedes">HÓSPEDES</label>
+                <select
+                  id="hospedes"
+                  value={hospedes}
+                  onChange={(e) => setHospedes(e.target.value)}
+                >
+                  <option value="1">1 hóspede</option>
+                  <option value="2">2 hóspedes</option>
+                  <option value="3">3 hóspedes</option>
+                  <option value="4">4 hóspedes</option>
+                  <option value="5">5 hóspedes</option>
+                </select>
+              </div>
+
+              <button
+                className="search-button"
+                onClick={() =>
+                  document.getElementById('hoteis')?.scrollIntoView({
+                    behavior: 'smooth',
+                  })
+                }
+              >
+                Buscar
+              </button>
             </div>
           </div>
-          <hr className="my-4" />
-          <div className="row g-3">
-            <div className="col-md-3 col-sm-6">
-              <strong>Equipe:</strong> <span className="text-secondary ms-1">{data?.equipe || 'Alpha'}</span>
+        </section>
+
+        <section className="hotel-container results-section" id="hoteis">
+
+        <div className="section-heading">
+            <div>
+              <span className="section-eyebrow">ENCONTRE SUA HOSPEDAGEM</span>
+              <h2>Explore hospedagens</h2>
+              <p>Compare opções e escolha a melhor para você.</p>
             </div>
-            <div className="col-md-3 col-sm-6">
-              <strong>Professor:</strong> <span className="text-secondary ms-1">{data?.professor?.nome || 'Ronildo Silva'}</span>
-            </div>
-            <div className="col-md-3 col-sm-6">
-              <strong>Ano:</strong> <span className="text-secondary ms-1">{data?.ano || '2026'}</span>
-            </div>
-            <div className="col-md-3 col-sm-6">
-              <strong>Semestre:</strong> <span className="text-secondary ms-1">{data?.semestre || '2'}</span>
+
+            <div className="results-tools">
+              <span className="results-count">
+                {hoteisOrdenados.length} hospedagens encontradas
+              </span>
+
+              <select
+                className="sort-select"
+                value={ordenacao}
+                onChange={(e) => setOrdenacao(e.target.value)}
+                aria-label="Ordenar hospedagens"
+              >
+                <option value="relevancia">Mais relevantes</option>
+                <option value="menor-preco">Menor preço</option>
+                <option value="melhor-avaliacao">Melhor avaliação</option>
+              </select>
             </div>
           </div>
-        </header>
 
-        {loading && (
-          <div className="text-center my-5 py-5">
-            <div className="spinner-border text-primary" role="status">
-              <span className="visually-hidden">Carregando dados da API...</span>
+          <div className="results-layout">
+            <aside className="filters-panel">
+              <h3>Filtros</h3>
+
+              <label htmlFor="preco">Preço máximo por diária</label>
+              <select
+                id="preco"
+                value={precoMaximo}
+                onChange={(e) => setPrecoMaximo(e.target.value)}
+              >
+                <option value="">Qualquer preço</option>
+                <option value="200">Até R$ 200</option>
+                <option value="300">Até R$ 300</option>
+                <option value="400">Até R$ 400</option>
+              </select>
+
+              <button
+                className="clear-filters"
+                onClick={() => {
+                  setDestino('')
+                  setPrecoMaximo('')
+                }}
+              >
+                Limpar filtros
+              </button>
+            </aside>
+
+            <div className="hotel-list">
+              {hoteisFiltrados.length > 0 ? (
+                hoteisOrdenados.map((hotel) => (
+                  <article className="hotel-card" key={hotel.id}>
+                    <img
+                      className="hotel-image"
+                      src={hotel.imagem}
+                      alt={hotel.nome}
+                    />
+
+                    <div className="hotel-information">
+                      <span className="hotel-location">
+                        {hotel.cidade}, {hotel.estado}
+                      </span>
+
+                      <h3>{hotel.nome}</h3>
+
+                      <p>{hotel.descricao}</p>
+
+                      <span className="hotel-rating">
+                        ★ {hotel.avaliacao} · {hotel.categoria}
+                      </span>
+                    </div>
+
+                    <div className="hotel-price">
+                      <span>Diária a partir de</span>
+                      <strong>
+                        R$ {hotel.preco.toLocaleString('pt-BR')}
+                      </strong>
+                      <small>por noite</small>
+                      <button
+                        onClick={() =>
+                          alert(`Você selecionou ${hotel.nome}`)
+                        }
+                      >
+                        Ver hospedagem
+                      </button>
+                    </div>
+                  </article>
+                ))
+              ) : (
+                <div className="empty-results">
+                  <h3>Nenhuma hospedagem encontrada</h3>
+                  <p>Tente pesquisar outro destino ou alterar os filtros.</p>
+                </div>
+              )}
             </div>
-            <p className="mt-3 text-secondary">Buscando informações do servidor backend...</p>
           </div>
-        )}
+        </section>
+      </main>
 
-        {error && (
-          <div className="alert alert-danger shadow-sm p-4" role="alert">
-            <h4 className="alert-heading fw-bold">Erro de Conexão com o Backend!</h4>
-            <p>Não foi possível obter os dados da API em <code>http://localhost:8000/api/v1/sobre</code>.</p>
-            <p className="mb-0">Verifique se o backend está rodando e se os bancos de dados foram inicializados com sucesso.</p>
-            <hr />
-            <p className="mb-0 small text-muted">Detalhe do erro: {error}</p>
-          </div>
-        )}
-
-        {!loading && !error && data && (
-          <div className="row g-4">
-            {/* Sidebar Lateral */}
-            <div className="col-md-3">
-              <Sidebar />
-            </div>
-
-            {/* Conteúdo Principal */}
-            <div className="col-md-9" id="tutorial-components">
-              <ProfessorProfile professor={data.professor} />
-              <DisciplinasList disciplinas={data.disciplinas} />
-              <StacksTable stacks={data.stacks} />
-              <ImageAndCarousel />
-              <VideoComponent />
-              <InteractiveExamples />
-              <HoteisRaw />
-            </div>
-          </div>
-        )}
-
-        <footer className="mt-5 py-4 border-top text-center text-muted">
-          <p className="mb-0">&copy; {new Date().getFullYear()} - Disciplina de Estágio II. Desenvolvido pela Equipe {data?.equipe || 'Alpha'}.</p>
-        </footer>
-      </div>
+      <footer className="hotel-footer" id="sobre">
+        <div className="hotel-container">
+          <a className="hotel-logo" href="#">
+            <span className="logo-icon">H</span>
+            hospeda<span>+</span>
+          </a>
+          <p>Encontre sua próxima hospedagem com mais facilidade.</p>
+          <small>Projeto acadêmico · Estágio II · 2026</small>
+        </div>
+      </footer>
     </div>
   )
 }
