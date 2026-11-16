@@ -10,6 +10,9 @@ const hoteis = [
     avaliacao: 9.2,
     categoria: 'Excelente',
     preco: 280,
+    capacidade: 4,
+    quartosDisponiveis: 2,
+    aceitaAnimais: true,
     imagem: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=900',
     descricao: 'Conforto, tranquilidade e uma bela vista da natureza.',
   },
@@ -21,6 +24,9 @@ const hoteis = [
     avaliacao: 8.8,
     categoria: 'Muito bom',
     preco: 190,
+    capacidade: 3,
+    quartosDisponiveis: 1,
+    aceitaAnimais: false,
     imagem: 'https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=900',
     descricao: 'Uma experiência aconchegante para descansar.',
   },
@@ -32,6 +38,9 @@ const hoteis = [
     avaliacao: 9.5,
     categoria: 'Excepcional',
     preco: 350,
+    capacidade: 6,
+    quartosDisponiveis: 3,
+    aceitaAnimais: true,
     imagem: 'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=900',
     descricao: 'Estrutura moderna e localização privilegiada.',
   },
@@ -78,8 +87,23 @@ export default function App() {
     const correspondeAvaliacao =
       !avaliacaoMinima || hotel.avaliacao >= Number(avaliacaoMinima)
 
-    return correspondeDestino && correspondePreco && correspondeAvaliacao
-  })
+    const correspondeHospedes =
+      hotel.capacidade >= adultos + criancas
+
+    const correspondeQuartos =
+      hotel.quartosDisponiveis >= quartos
+
+    const correspondeAnimais =
+      !aceitaAnimais || hotel.aceitaAnimais
+        return(
+        correspondeDestino &&
+        correspondePreco &&
+        correspondeAvaliacao &&
+        correspondeHospedes &&
+        correspondeQuartos &&
+        correspondeAnimais
+        ) 
+    })
 
   const hoteisOrdenados = [...hoteisFiltrados].sort((a, b) => {
     if (ordenacao === 'menor-preco') {
