@@ -43,6 +43,7 @@ export default function App() {
   const [saida, setSaida] = useState('')
   const [hospedes, setHospedes] = useState('2')
   const [precoMaximo, setPrecoMaximo] = useState('')
+  const [avaliacaoMinima, setAvaliacaoMinima] = useState('')
   const [ordenacao, setOrdenacao] = useState('relevancia')
 
   const hoteisFiltrados = hoteis.filter((hotel) => {
@@ -54,7 +55,10 @@ export default function App() {
     const correspondePreco =
       !precoMaximo || hotel.preco <= Number(precoMaximo)
 
-    return correspondeDestino && correspondePreco
+    const correspondeAvaliacao =
+      !avaliacaoMinima || hotel.avaliacao >= Number(avaliacaoMinima)
+
+    return correspondeDestino && correspondePreco && correspondeAvaliacao
   })
 
   const hoteisOrdenados = [...hoteisFiltrados].sort((a, b) => {
@@ -213,11 +217,27 @@ export default function App() {
                 <option value="400">Até R$ 400</option>
               </select>
 
+              <div className="filter-group">
+                <label htmlFor="avaliacao">Avaliação mínima</label>
+
+                <select
+                  id="avaliacao"
+                  value={avaliacaoMinima}
+                  onChange={(e) => setAvaliacaoMinima(e.target.value)}
+                >
+                <option value="">Qualquer avaliação</option>
+                <option value="7">7 ou mais</option>
+                <option value="8">8 ou mais</option>
+                <option value="9">9 ou mais</option>
+                </select>
+              </div>
+
               <button
                 className="clear-filters"
                 onClick={() => {
                   setDestino('')
                   setPrecoMaximo('')
+                  setAvaliacaoMinima('')
                 }}
               >
                 Limpar filtros

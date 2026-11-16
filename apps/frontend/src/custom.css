@@ -585,3 +585,24 @@ button, input, select {
     flex-direction: column;
   }
 }
+
+
+.filter-group {
+  margin-top: 22px;
+}
+
+.filter-group select {
+  width: 100%;
+  padding: 11px;
+  border: 1px solid #dfe5ee;
+  border-radius: 8px;
+  background: white;
+  color: #354963;
+  outline: none;
+  transition: border-color .2s, box-shadow .2s;
+}
+
+.filter-group select:focus {
+  border-color: #1769e8;
+  box-shadow: 0 0 0 3px rgba(23, 105, 232, .1);
+}
