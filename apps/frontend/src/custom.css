@@ -716,3 +716,37 @@ button, input, select {
 .guests-confirm:hover {
   background: #0665c4;
 }
+
+.search-feedback {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: fit-content;
+  max-width: 100%;
+  margin-top: 16px;
+  padding: 14px 20px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+}
+
+.search-feedback.error {
+  color: #b42318;
+  background-color: #fef3f2;
+  border: 1px solid #fecdca;
+}
+
+.search-feedback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 16px auto 0;
+  text-align: center;
+}
+
+.feedback-icon {
+  font-size: 20px;
+  font-weight: bold;
+  flex-shrink: 0;
+}

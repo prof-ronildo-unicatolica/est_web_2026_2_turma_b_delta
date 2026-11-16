@@ -39,6 +39,8 @@ const hoteis = [
 
 export default function App() {
   const [destino, setDestino] = useState('')
+  const [destinoBusca, setDestinoBusca] = useState('')
+  const [mensagemBusca, setMensagemBusca] = useState('')
   const [entrada, setEntrada] = useState('')
   const [saida, setSaida] = useState('')
   const [adultos, setAdultos] = useState(2)
@@ -50,11 +52,25 @@ export default function App() {
   const [avaliacaoMinima, setAvaliacaoMinima] = useState('')
   const [ordenacao, setOrdenacao] = useState('relevancia')
 
+  const realizarBusca = () => {
+  if (entrada && saida && saida <= entrada) {
+    setMensagemBusca('A data de check-out deve ser posterior ao check-in.')
+    return
+  }
+
+  setDestinoBusca(destino)
+  setMensagemBusca('')
+
+  document.getElementById('hoteis')?.scrollIntoView({
+    behavior: 'smooth',
+  })
+}
+
   const hoteisFiltrados = hoteis.filter((hotel) => {
     const correspondeDestino =
       `${hotel.nome} ${hotel.cidade} ${hotel.estado}`
         .toLowerCase()
-        .includes(destino.toLowerCase())
+        .includes(destinoBusca.toLowerCase())
 
     const correspondePreco =
       !precoMaximo || hotel.preco <= Number(precoMaximo)
@@ -236,15 +252,26 @@ export default function App() {
 
               <button
                 className="search-button"
-                onClick={() =>
-                  document.getElementById('hoteis')?.scrollIntoView({
-                    behavior: 'smooth',
-                  })
-                }
+                onClick={realizarBusca}
               >
                 Buscar
               </button>
             </div>
+
+              {mensagemBusca && (
+                <div
+                  className={`search-feedback ${
+                    mensagemBusca.includes('posterior') ? 'error' : 'success'
+                  }`}
+                  role="status"
+                >
+                  <span className="feedback-icon">
+                    {mensagemBusca.includes('posterior') ? '⚠' : '✓'}
+                  </span>
+                  {mensagemBusca}
+                </div>
+              )}
+
           </div>
         </section>
 
@@ -310,8 +337,10 @@ export default function App() {
                 className="clear-filters"
                 onClick={() => {
                   setDestino('')
+                  setDestinoBusca('')
                   setPrecoMaximo('')
                   setAvaliacaoMinima('')
+                  setMensagemBusca('')
                 }}
               >
                 Limpar filtros
