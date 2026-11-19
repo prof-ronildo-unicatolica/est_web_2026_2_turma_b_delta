@@ -20,20 +20,70 @@ Atualmente, o projeto inclui uma estrutura de tutorial acadêmico que demonstra 
 ## Como Executar o Backend Localmente
 
 ### 1. Pré-requisitos
-Certifique-se de que os containers do banco de dados estejam rodando na raiz do projeto:
-```bash
-# Na raiz do monorepo:
-docker compose up -d
-```
+Tenha Docker Compose e Python instalados. Configure os arquivos de ambiente
+antes de iniciar os serviços.
 
 ### 2. Configurar o Arquivo de Variáveis (.env)
-Duplique o arquivo de modelo `env_example` com o nome `.env`:
-* **Linux/macOS**: `cp env_example .env`
-* **Windows (PowerShell)**: `copy env_example .env`
+Duplique o arquivo `.env.exemplo` da raiz com o nome `.env`. Preencha as
+credenciais de PostgreSQL, MongoDB e RabbitMQ com valores próprios do ambiente.
+O exemplo deixa os campos secretos vazios para impedir que um valor padrão seja
+usado sem querer.
+
+Para executar a API diretamente no host, copie também `env_example` deste
+diretório para `.env` e configure os endereços locais dos bancos nesse arquivo.
+
+Gere uma chave JWT forte em vez de reutilizar uma chave do exemplo:
+
+```bash
+openssl rand -hex 32
+```
+
+Configure o resultado em `SECRET_KEY`. `CORS_ALLOWED_ORIGINS` deve conter apenas
+as origens reais do frontend, separadas por vírgula.
+
+Na raiz do projeto, inicie os serviços depois de preencher `.env`:
+
+```bash
+docker compose up -d --build
+```
+
+### 3. Administrador e credenciais antigas
+
+O seed de administrador do PostgreSQL foi removido por uma nova migração. As
+credenciais antigas de MongoDB não são mais criadas no início da API; para
+remover a conta de demonstração que já possa existir nesse banco, execute uma
+vez após iniciar os serviços de dados:
+
+```bash
+docker compose exec core-service poetry run python -m app.core.cleanup_legacy_mongo_admin
+```
+
+Depois de aplicar as migrações (`alembic upgrade head`), crie um administrador
+informando valores somente no ambiente do processo. O script não imprime nem
+armazena a senha em texto:
+
+```bash
+# Informe cada valor quando solicitado; a senha não aparece na tela.
+read -r ADMIN_NAME
+read -r ADMIN_EMAIL
+read -r -s ADMIN_PASSWORD
+export ADMIN_NAME ADMIN_EMAIL ADMIN_PASSWORD
+docker compose exec \
+  -e ADMIN_NAME="$ADMIN_NAME" \
+  -e ADMIN_EMAIL="$ADMIN_EMAIL" \
+  -e ADMIN_PASSWORD="$ADMIN_PASSWORD" \
+  core-service poetry run python -m app.core.create_admin
+unset ADMIN_PASSWORD
+```
+
+Credenciais que já foram usadas em um deploy precisam ser rotacionadas no
+provedor que mantém esse ambiente e atualizadas nos segredos de execução; um PR
+não consegue confirmar nem alterar segredos de infraestrutura. Trocar
+`SECRET_KEY` invalida os JWTs existentes.
 
 ---
 
-### 3. Instalação e Execução
+### 4. Instalação e Execução
 
 #### Opção A: Com Virtualenv Padrão (`venv`)
 1. **Criar e Ativar Ambiente Virtual**:
@@ -52,7 +102,7 @@ Duplique o arquivo de modelo `env_example` com o nome `.env`:
    pip install --upgrade pip
    pip install -r requirements.txt
    ```
-3. **Rodar Migrações e Seeds (Alembic)**:
+3. **Rodar Migrações (Alembic)**:
    ```bash
    alembic upgrade head
    ```
@@ -70,7 +120,7 @@ Duplique o arquivo de modelo `env_example` com o nome `.env`:
    poetry install
    poetry shell
    ```
-2. **Rodar Migrações e Seeds (Alembic)**:
+2. **Rodar Migrações (Alembic)**:
    ```bash
    poetry run alembic upgrade head
    ```
@@ -88,6 +138,11 @@ Após iniciar o servidor, acesse a documentação interativa oficial do Swagger 
 * **`GET /`**: Rota raiz de boas-vindas.
 * **`GET /api/v1/health`**: Verifica a saúde do sistema e testa ativamente a conexão com o Postgres e MongoDB.
 * **`GET /api/v1/sobre`**: Retorna dados de equipes e relacionamentos complexos do banco (Professor, Disciplina, Stacks, Tecnologias e Linguagens).
+* **`POST /api/v1/auth/register`** e **`POST /api/v1/auth/login`**: Cadastro e login com JWT.
+* **`GET /api/v1/hospedes/me`**: Perfil de hóspede vinculado à conta autenticada.
+
+As portas de PostgreSQL, MongoDB e RabbitMQ no Compose ficam vinculadas a
+`127.0.0.1`; não as publique diretamente na internet.
 
 ---
 
@@ -102,7 +157,8 @@ Após iniciar o servidor, acesse a documentação interativa oficial do Swagger 
 │   ├── core/
 │   │   ├── config.py         # Variáveis e configurações obtidas do .env
 │   │   ├── database.py       # Gerenciamento de conexões com Postgres e MongoDB
-│   │   └── seed_mongo.py     # Script de inicialização automática de usuários no MongoDB
+│   │   ├── create_admin.py   # Criação explícita de administrador via ambiente
+│   │   └── cleanup_legacy_mongo_admin.py # Remoção pontual da conta antiga de demonstração
 │   ├── models/               # Modelos ORM SQLAlchemy (relacionamento 1:1, 1:N, N:M)
 │   ├── schemas/              # Schemas Pydantic (validação de dados e Swagger)
 │   ├── repositories/         # Camada de abstracao de dados (queries SQL)

@@ -4,15 +4,16 @@
 PROJECT_NAME=Sistema de Reservas - Core Service
 API_V1_STR=/api/v1
 
-SECRET_KEY=gere_uma_chave_secreta_local
+SECRET_KEY=
+CORS_ALLOWED_ORIGINS=http://localhost:5173,http://127.0.0.1:5173
 
 POSTGRES_SERVER=postgres
-POSTGRES_USER=seu_usuario_postgres
-POSTGRES_PASSWORD=sua_senha_postgres
+POSTGRES_USER=
+POSTGRES_PASSWORD=
 POSTGRES_DB=hotel_db_dev
 POSTGRES_PORT=5432
 
-MONGODB_URL=mongodb://USUARIO:SENHA@mongodb:27017/?authSource=admin
+MONGODB_URL=
 MONGODB_DB=hotel_mongo_dev
 
-RABBITMQ_URL=amqp://USUARIO:SENHA@rabbitmq:5672/
+RABBITMQ_URL=

@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
+from app.api.deps import get_current_admin
 from app.core.database import get_db
 from app.schemas.hotel import CidadeCreateSchema, CidadeResponseSchema
 from app.services.hotel_service import CidadeJaExisteError, CidadeService
@@ -14,7 +15,11 @@ router = APIRouter(prefix="/cidades", tags=["Cidades"])
     status_code=status.HTTP_201_CREATED,
     summary="Cria uma cidade",
 )
-def criar_cidade(payload: CidadeCreateSchema, db: Session = Depends(get_db)):
+def criar_cidade(
+    payload: CidadeCreateSchema,
+    db: Session = Depends(get_db),
+    _admin=Depends(get_current_admin),
+):
     try:
         return CidadeService(db).criar(nome=payload.nome)
     except CidadeJaExisteError as error:

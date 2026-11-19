@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 
-const API = 'http://localhost:8000/api/v1'
+const API = import.meta.env.VITE_API_BASE_URL || '/api/v1'
 
 async function buscarJson(endpoint) {
   const resposta = await fetch(API + '/' + endpoint)

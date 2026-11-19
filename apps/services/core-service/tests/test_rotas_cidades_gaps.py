@@ -1,6 +1,13 @@
 """Casos complementares das rotas de Cidade (issue #16) que não estavam
 cobertos por `test_hotel_api.py`. Complementa, não substitui."""
 
+import pytest
+
+
+@pytest.fixture(autouse=True)
+def autenticar_testes_de_cidades(client, admin_client):
+    client.headers.update(admin_client.headers)
+
 
 def test_criar_cidade_sem_nome_retorna_422(client):
     """`nome` é obrigatório em CidadeCreateSchema."""

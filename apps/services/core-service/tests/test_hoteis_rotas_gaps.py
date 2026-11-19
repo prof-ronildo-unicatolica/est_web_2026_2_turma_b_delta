@@ -2,7 +2,14 @@
 `test_hotel_api.py`: validações de entrada e o filtro por cidade
 inexistente."""
 
+import pytest
+
 UUID_INEXISTENTE = "00000000-0000-0000-0000-000000000000"
+
+
+@pytest.fixture(autouse=True)
+def autenticar_testes_de_hoteis(client, admin_client):
+    client.headers.update(admin_client.headers)
 
 
 def test_criar_hotel_sem_cidade_id_retorna_422(client):

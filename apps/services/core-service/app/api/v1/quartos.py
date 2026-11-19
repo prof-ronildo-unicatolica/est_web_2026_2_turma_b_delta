@@ -6,6 +6,7 @@ from datetime import date
 from fastapi import APIRouter, Depends, Query, status
 from sqlalchemy.orm import Session
 
+from app.api.deps import get_current_admin
 from app.core.database import get_db
 from app.schemas.reserva import QuartoCreateSchema, QuartoResponseSchema
 from app.services.reserva_service import QuartoService
@@ -16,7 +17,11 @@ router = APIRouter(prefix="/quartos", tags=["Quartos"])
 @router.post(
     "", response_model=QuartoResponseSchema, status_code=status.HTTP_201_CREATED
 )
-def criar_quarto(payload: QuartoCreateSchema, db: Session = Depends(get_db)):
+def criar_quarto(
+    payload: QuartoCreateSchema,
+    db: Session = Depends(get_db),
+    _admin=Depends(get_current_admin),
+):
     return QuartoService(db).criar(
         hotel_id=payload.hotel_id,
         numero=payload.numero,

@@ -35,6 +35,12 @@ class Hospede(Base):
     __tablename__ = "hospedes"
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
+    usuario_id: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey("usuarios.id", ondelete="SET NULL"),
+        unique=True,
+        nullable=True,
+        index=True,
+    )
     nome: Mapped[str] = mapped_column(String(100), nullable=False)
     cpf: Mapped[str] = mapped_column(String(11), unique=True, nullable=False)
     email: Mapped[str] = mapped_column(String(100), unique=True, nullable=False)

@@ -1,5 +1,3 @@
-from contextlib import asynccontextmanager
-
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
@@ -13,8 +11,6 @@ from app.api.v1.quartos import router as quartos_router
 from app.api.v1.reservas import router as reservas_router
 from app.api.v1.sobre import router as sobre_router
 from app.core.config import settings
-from app.core.database import get_mongo_db
-from app.core.seed_mongo import seed_mongo_users
 from app.services.reserva_service import (
     ConflitoDeDadosError,
     PeriodoInvalidoError,
@@ -32,25 +28,16 @@ STATUS_POR_ERRO = {
 }
 
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    # Evento de inicialização: Popular/Semear o MongoDB
-    mongo_db = get_mongo_db()
-    await seed_mongo_users(mongo_db)
-    yield
-
-
 app = FastAPI(
     title=settings.PROJECT_NAME,
     openapi_url=f"{settings.API_V1_STR}/openapi.json",
-    lifespan=lifespan,
 )
 
 # Configuração de CORS para permitir acesso do Frontend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
+    allow_origins=settings.cors_origins,
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
