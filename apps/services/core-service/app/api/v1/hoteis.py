@@ -3,6 +3,7 @@ import uuid
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 
+from app.api.deps import get_current_admin
 from app.core.database import get_db
 from app.schemas.hotel import HotelCreateSchema, HotelResponseSchema
 from app.services.hotel_service import CidadeNaoEncontradaError, HotelService
@@ -15,7 +16,11 @@ router = APIRouter(prefix="/hoteis", tags=["Hoteis"])
     response_model=HotelResponseSchema,
     status_code=status.HTTP_201_CREATED,
 )
-def criar_hotel(payload: HotelCreateSchema, db: Session = Depends(get_db)):
+def criar_hotel(
+    payload: HotelCreateSchema,
+    db: Session = Depends(get_db),
+    _admin=Depends(get_current_admin),
+):
     try:
         return HotelService(db).criar(
             nome=payload.nome, cidade_id=payload.cidade_id

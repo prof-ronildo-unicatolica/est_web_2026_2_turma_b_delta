@@ -7,6 +7,11 @@ AMANHA = HOJE + timedelta(days=1)
 DEPOIS = HOJE + timedelta(days=4)
 
 
+@pytest.fixture(autouse=True)
+def authenticate_reservation_tests(client, admin_client):
+    client.headers.update(admin_client.headers)
+
+
 def criar_hotel(client):
     cidade = client.post("/api/v1/cidades", json={"nome": "Quixada"}).json()
     return client.post(
@@ -55,7 +60,7 @@ def test_criar_hospede_returns_201(client):
 
 def test_criar_hospede_com_cpf_duplicado_returns_409(client):
     criar_hospede(client)
-    resposta = criar_hospede(client, email="outro@teste.com")
+    resposta = criar_hospede(client)
     assert resposta.status_code == 409
 
 

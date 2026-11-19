@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import AuthModal from './components/AuthModal'
 import ProfessorProfile from './components/ProfessorProfile'
 import DisciplinasList from './components/DisciplinasList'
 import StacksTable from './components/StacksTable'
@@ -8,13 +9,21 @@ import VideoComponent from './components/VideoComponent'
 import InteractiveExamples from './components/InteractiveExamples'
 import HoteisRaw from './components/HoteisRaw'
 
+const API_BASE = import.meta.env.VITE_API_BASE_URL || '/api/v1'
+const TOKEN_KEY = 'reservas_access_token'
+
 export default function App() {
   const [data, setData] = useState(null)
   const [error, setError] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [account, setAccount] = useState(null)
+  const [checkingSession, setCheckingSession] = useState(true)
+  const [authMode, setAuthMode] = useState(null)
+  const [authError, setAuthError] = useState('')
+  const [authMessage, setAuthMessage] = useState('')
 
   useEffect(() => {
-    fetch('http://localhost:8000/api/v1/sobre')
+    fetch(`${API_BASE}/sobre`)
       .then((res) => {
         if (!res.ok) {
           throw new Error('Falha ao se conectar com a API')
@@ -30,6 +39,103 @@ export default function App() {
         setLoading(false)
       })
   }, [])
+
+  useEffect(() => {
+    const token = sessionStorage.getItem(TOKEN_KEY)
+    if (!token) {
+      setCheckingSession(false)
+      return
+    }
+
+    fetch(`${API_BASE}/auth/me`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((response) => {
+        if (response.status === 401) {
+          sessionStorage.removeItem(TOKEN_KEY)
+          return null
+        }
+        if (!response.ok) {
+          throw new Error('Não foi possível verificar a sessão')
+        }
+        return response.json()
+      })
+      .then((profile) => {
+        if (profile) setAccount(profile)
+      })
+      .catch(() => {
+        setAccount(null)
+      })
+      .finally(() => setCheckingSession(false))
+  }, [])
+
+  function abrirAutenticacao(mode) {
+    setAuthError('')
+    setAuthMessage('')
+    setAuthMode(mode)
+  }
+
+  function sair() {
+    sessionStorage.removeItem(TOKEN_KEY)
+    setAccount(null)
+    setAuthMode(null)
+    setAuthError('')
+    setAuthMessage('')
+  }
+
+  async function enviarAutenticacao(form) {
+    setAuthError('')
+    setAuthMessage('')
+    const isRegister = authMode === 'register'
+    try {
+      const response = await fetch(
+        `${API_BASE}/auth/${isRegister ? 'register' : 'login'}`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(
+            isRegister
+              ? { nome: form.nome, email: form.email, senha: form.senha }
+              : { email: form.email, senha: form.senha },
+          ),
+        },
+      )
+
+      if (isRegister) {
+        if (!response.ok) {
+          setAuthError(
+            'Confira o nome, o e-mail e a senha (mínimo 8 caracteres e até 72 bytes).',
+          )
+          return false
+        }
+        const result = await response.json()
+        setAuthMessage(result.message)
+        setAuthMode('login')
+        return true
+      }
+
+      if (!response.ok) {
+        setAuthError('E-mail ou senha inválidos.')
+        return false
+      }
+      const result = await response.json()
+      const profileResponse = await fetch(`${API_BASE}/auth/me`, {
+        headers: { Authorization: `Bearer ${result.access_token}` },
+      })
+      if (!profileResponse.ok) {
+        setAuthError('Não foi possível iniciar a sessão. Tente novamente.')
+        return false
+      }
+      const profile = await profileResponse.json()
+      sessionStorage.setItem(TOKEN_KEY, result.access_token)
+      setAccount(profile)
+      setAuthMode(null)
+      return true
+    } catch {
+      setAuthError('Não foi possível conectar ao serviço de autenticação.')
+      return false
+    }
+  }
 
   return (
     <div className="bg-light min-vh-100 pb-5">
@@ -53,12 +159,46 @@ export default function App() {
               </li>
             </ul>
             <div className="d-flex align-items-center gap-2">
-              <button className="btn btn-outline-primary btn-sm px-3" type="button">
-                Login
-              </button>
-              <button className="btn btn-primary btn-sm px-3" type="button">
-                Perfil
-              </button>
+              {account ? (
+                <>
+                  <span className="badge text-bg-secondary">
+                    {account.is_admin ? 'Administrador' : 'Hóspede'}
+                  </span>
+                  <button
+                    className="btn btn-outline-primary btn-sm px-3"
+                    type="button"
+                    onClick={() => abrirAutenticacao('profile')}
+                  >
+                    Perfil
+                  </button>
+                  <button
+                    className="btn btn-primary btn-sm px-3"
+                    type="button"
+                    onClick={sair}
+                  >
+                    Sair
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button
+                    className="btn btn-outline-primary btn-sm px-3"
+                    type="button"
+                    onClick={() => abrirAutenticacao('login')}
+                    disabled={checkingSession}
+                  >
+                    Entrar
+                  </button>
+                  <button
+                    className="btn btn-primary btn-sm px-3"
+                    type="button"
+                    onClick={() => abrirAutenticacao('register')}
+                    disabled={checkingSession}
+                  >
+                    Criar conta
+                  </button>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -109,7 +249,7 @@ export default function App() {
         {error && (
           <div className="alert alert-danger shadow-sm p-4" role="alert">
             <h4 className="alert-heading fw-bold">Erro de Conexão com o Backend!</h4>
-            <p>Não foi possível obter os dados da API em <code>http://localhost:8000/api/v1/sobre</code>.</p>
+            <p>Não foi possível obter os dados da API em <code>{API_BASE}/sobre</code>.</p>
             <p className="mb-0">Verifique se o backend está rodando e se os bancos de dados foram inicializados com sucesso.</p>
             <hr />
             <p className="mb-0 small text-muted">Detalhe do erro: {error}</p>
@@ -140,6 +280,18 @@ export default function App() {
           <p className="mb-0">&copy; {new Date().getFullYear()} - Disciplina de Estágio II. Desenvolvido pela Equipe {data?.equipe || 'Alpha'}.</p>
         </footer>
       </div>
+      {authMode && (
+        <AuthModal
+          mode={authMode}
+          account={account}
+          error={authError}
+          message={authMessage}
+          onClose={() => setAuthMode(null)}
+          onLogout={sair}
+          onModeChange={abrirAutenticacao}
+          onSubmit={enviarAutenticacao}
+        />
+      )}
     </div>
   )
 }

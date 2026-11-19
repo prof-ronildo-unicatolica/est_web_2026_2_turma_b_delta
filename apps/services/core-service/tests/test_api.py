@@ -31,7 +31,7 @@ def test_get_professor_inexistente_returns_404(client):
 
 # 3. Teste de 201 Created para Disciplina
 @patch("app.services.tutorial_service.publish_event")
-def test_criar_disciplina_returns_201(mock_publish, client, db_session):
+def test_criar_disciplina_returns_201(mock_publish, admin_client, db_session):
     repo = TutorialRepository(db_session)
     prof = repo.create_professor(
         nome="Ronildo Silva",
@@ -45,24 +45,23 @@ def test_criar_disciplina_returns_201(mock_publish, client, db_session):
         "semestre": 2,
         "professor_id": str(prof.id),
     }
-    response = client.post("/api/v1/sobre/disciplinas", json=payload)
+    response = admin_client.post("/api/v1/sobre/disciplinas", json=payload)
     assert response.status_code == 201
     assert response.json()["nome"] == "Inteligencia Artificial"
     mock_publish.assert_called_once()
 
 
 # 4. Teste de 422 Unprocessable Entity para Disciplina
-def test_criar_disciplina_com_dados_invalidos_returns_422(client):
+def test_criar_disciplina_com_dados_invalidos_returns_422(admin_client):
     payload = {
         "nome": "Disciplina Sem Ano",
         "semestre": 2,
     }
-    response = client.post("/api/v1/sobre/disciplinas", json=payload)
+    response = admin_client.post("/api/v1/sobre/disciplinas", json=payload)
     assert response.status_code == 422
 
 
 # 5. Teste de 500 Internal Server Error
-def test_trigger_server_error_returns_500(client):
+def test_debug_error_route_nao_existe(client):
     response = client.get("/api/v1/debug/error")
-    assert response.status_code == 500
-    assert response.text == "Internal Server Error"
+    assert response.status_code == 404

@@ -1,16 +1,15 @@
 import uuid
-from typing import Optional
 
-from fastapi import APIRouter, Depends, Header, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
+from app.api.deps import get_current_admin
 from app.core.database import get_db
 from app.schemas.tutorial import (
-    ProfessorBaseSchema,
-    ProfessorCreateSchema,
-    SobreResponseSchema,
     DisciplinaCreateSchema,
     DisciplinaResponseSimpleSchema,
+    ProfessorBaseSchema,
+    SobreResponseSchema,
 )
 from app.services.tutorial_service import TutorialService
 
@@ -36,11 +35,7 @@ def get_professor_por_id(professor_id: uuid.UUID, db: Session = Depends(get_db))
 async def criar_disciplina(
     payload: DisciplinaCreateSchema,
     db: Session = Depends(get_db),
+    _admin=Depends(get_current_admin),
 ):
     service = TutorialService(db)
     return await service.create_disciplina(payload)
-
-
-@router.get("/debug/error")
-def trigger_error():
-    raise RuntimeError("Erro imprevisto de conexao com gateway ou hardware.")

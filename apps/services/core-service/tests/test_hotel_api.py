@@ -1,47 +1,47 @@
-def test_cidades_cria_lista_e_rejeita_duplicada(client):
-    primeira = client.post("/api/v1/cidades", json={"nome": "Sobral"})
-    segunda = client.post("/api/v1/cidades", json={"nome": "Fortaleza"})
-    duplicada = client.post("/api/v1/cidades", json={"nome": "Sobral"})
+def test_cidades_cria_lista_e_rejeita_duplicada(admin_client):
+    primeira = admin_client.post("/api/v1/cidades", json={"nome": "Sobral"})
+    segunda = admin_client.post("/api/v1/cidades", json={"nome": "Fortaleza"})
+    duplicada = admin_client.post("/api/v1/cidades", json={"nome": "Sobral"})
 
     assert primeira.status_code == 201
     assert segunda.status_code == 201
     assert duplicada.status_code == 409
-    assert [cidade["nome"] for cidade in client.get("/api/v1/cidades").json()] == [
+    assert [cidade["nome"] for cidade in admin_client.get("/api/v1/cidades").json()] == [
         "Fortaleza",
         "Sobral",
     ]
 
 
-def test_cidade_com_nome_vazio_retorna_422(client):
-    response = client.post("/api/v1/cidades", json={"nome": ""})
+def test_cidade_com_nome_vazio_retorna_422(admin_client):
+    response = admin_client.post("/api/v1/cidades", json={"nome": ""})
     assert response.status_code == 422
 
 
-def test_hotel_cria_com_cidade_aninhada_e_filtra_por_cidade(client):
-    cidade = client.post("/api/v1/cidades", json={"nome": "Aquiraz"}).json()
-    outro = client.post("/api/v1/cidades", json={"nome": "Quixada"}).json()
+def test_hotel_cria_com_cidade_aninhada_e_filtra_por_cidade(admin_client):
+    cidade = admin_client.post("/api/v1/cidades", json={"nome": "Aquiraz"}).json()
+    outro = admin_client.post("/api/v1/cidades", json={"nome": "Quixada"}).json()
 
-    hotel = client.post(
+    hotel = admin_client.post(
         "/api/v1/hoteis",
         json={"nome": "Hotel Praia Bela", "cidade_id": cidade["id"]},
     )
-    client.post(
+    admin_client.post(
         "/api/v1/hoteis",
         json={"nome": "Hotel Central", "cidade_id": outro["id"]},
     )
 
     assert hotel.status_code == 201
     assert hotel.json()["cidade"] == cidade
-    assert len(client.get("/api/v1/hoteis").json()) == 2
-    filtrados = client.get(
+    assert len(admin_client.get("/api/v1/hoteis").json()) == 2
+    filtrados = admin_client.get(
         "/api/v1/hoteis", params={"cidade_id": cidade["id"]}
     )
     assert filtrados.status_code == 200
     assert [item["nome"] for item in filtrados.json()] == ["Hotel Praia Bela"]
 
 
-def test_hotel_com_cidade_inexistente_retorna_404(client):
-    response = client.post(
+def test_hotel_com_cidade_inexistente_retorna_404(admin_client):
+    response = admin_client.post(
         "/api/v1/hoteis",
         json={
             "nome": "Hotel Fantasma",

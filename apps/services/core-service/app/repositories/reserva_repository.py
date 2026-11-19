@@ -13,12 +13,32 @@ class HospedeRepository:
     def __init__(self, db: Session):
         self.db = db
 
-    def create(self, nome: str, cpf: str, email: str, telefone: str | None) -> Hospede:
-        hospede = Hospede(nome=nome, cpf=cpf, email=email, telefone=telefone)
+    def create(
+        self,
+        nome: str,
+        cpf: str,
+        email: str,
+        telefone: str | None,
+        usuario_id: uuid.UUID,
+    ) -> Hospede:
+        hospede = Hospede(
+            nome=nome,
+            cpf=cpf,
+            email=email,
+            telefone=telefone,
+            usuario_id=usuario_id,
+        )
         self.db.add(hospede)
         self.db.commit()
         self.db.refresh(hospede)
         return hospede
+
+    def get_by_usuario_id(self, usuario_id: uuid.UUID) -> Hospede | None:
+        return (
+            self.db.query(Hospede)
+            .filter(Hospede.usuario_id == usuario_id)
+            .first()
+        )
 
     def listar(self) -> list[Hospede]:
         return self.db.query(Hospede).order_by(Hospede.nome).all()

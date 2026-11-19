@@ -43,16 +43,37 @@ class HospedeService:
     def __init__(self, db: Session):
         self.repository = HospedeRepository(db)
 
-    def criar(self, nome: str, cpf: str, email: str, telefone: str | None) -> Hospede:
+    def criar(
+        self,
+        nome: str,
+        cpf: str,
+        email: str,
+        telefone: str | None,
+        usuario_id: uuid.UUID,
+    ) -> Hospede:
         nome = nome.strip()
         email = email.strip().lower()
+        if self.repository.get_by_usuario_id(usuario_id):
+            raise ConflitoDeDadosError(
+                "A conta ja possui um perfil de hospede."
+            )
         if self.repository.get_by_cpf(cpf):
-            raise ConflitoDeDadosError(f"Ja existe um hospede com o CPF {cpf}.")
+            raise ConflitoDeDadosError("Ja existe um perfil com esses dados.")
         if self.repository.get_by_email(email):
-            raise ConflitoDeDadosError(f"Ja existe um hospede com o e-mail {email}.")
+            raise ConflitoDeDadosError("Ja existe um perfil com esses dados.")
         return self.repository.create(
-            nome=nome, cpf=cpf, email=email, telefone=telefone
+            nome=nome,
+            cpf=cpf,
+            email=email,
+            telefone=telefone,
+            usuario_id=usuario_id,
         )
+
+    def buscar_do_usuario(self, usuario_id: uuid.UUID) -> Hospede:
+        hospede = self.repository.get_by_usuario_id(usuario_id)
+        if hospede is None:
+            raise RecursoNaoEncontradoError("Perfil de hospede nao encontrado.")
+        return hospede
 
     def listar(self) -> list[Hospede]:
         return self.repository.listar()
@@ -133,17 +154,24 @@ class ReservaService:
 
     def criar(
         self,
+        usuario_id: uuid.UUID,
         hospede_id: uuid.UUID,
         quarto_id: uuid.UUID,
         check_in: date,
         check_out: date,
         hospedes_quantidade: int,
+        is_admin: bool = False,
     ) -> Reserva:
         diarias = validar_periodo(check_in, check_out)
 
-        if self.hospedes.get_by_id(hospede_id) is None:
+        hospede = self.hospedes.get_by_id(hospede_id)
+        if hospede is None:
             raise RecursoNaoEncontradoError(
-                f"Nao existe hospede com id '{hospede_id}'."
+                "Perfil de hospede nao encontrado."
+            )
+        if not is_admin and hospede.usuario_id != usuario_id:
+            raise RecursoNaoEncontradoError(
+                "Perfil de hospede nao encontrado."
             )
 
         quarto = self.quartos.get_by_id(quarto_id)
